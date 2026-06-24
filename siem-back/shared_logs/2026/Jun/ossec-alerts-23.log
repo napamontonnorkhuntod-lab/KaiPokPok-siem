@@ -1,0 +1,108 @@
+** Alert 1782193922.0: mail  - local,web,attackweb,attack,data_exfiltration,critical
+2026 Jun 23 05:52:02 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 100011 (level 13) -> 'Critical: Massive Data Exfiltration Detected - HTTP 200 response with payload larger than 100MB. Possible database dump exfiltration.'
+Src IP: 198.51.100.45
+198.51.100.45 - - [17/Jun/2026:04:20:00 +0700] "GET /download.php?file=secret_backup_db.sql HTTP/1.1" 200 985420100
+
+** Alert 1782193926.470: mail  - local,web,attackweb,attack,sql_injection,pci_dss_6.5,pci_dss_11.4
+2026 Jun 23 05:52:06 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 100002 (level 12) -> 'SQL Injection Attack Detected: UNION SELECT payload in URL returned HTTP 200 (successful exploitation).'
+Src IP: 114.23.45.12
+114.23.45.12 - - [16/Jun/2026:02:41:15 +0700] "GET /index.php?id=1'%20UNION%20SELECT%20username,%20password%20FROM%20users-- HTTP/1.1" 200 5420
+
+** Alert 1782193928.951: mail  - local,web,attackweb,attack,sql_injection,pci_dss_6.5,pci_dss_11.4
+2026 Jun 23 05:52:08 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 100003 (level 12) -> 'SQL Injection Attack Detected: Boolean-based SQL bypass (OR 1=1) in URL returned HTTP 200 (successful exploitation).'
+Src IP: 114.23.45.12
+114.23.45.12 - - [16/Jun/2026:02:41:16 +0700] "GET /login.php?user=admin'%20OR%20'1'='1' HTTP/1.1" 200 4125
+
+** Alert 1782193930.1409: - web,accesslog,attack,pci_dss_6.5,pci_dss_11.4,pci_dss_6.5.1,gdpr_IV_35.7.d,nist_800_53_SA.11,nist_800_53_SI.4,tsc_CC6.6,tsc_CC7.1,tsc_CC8.1,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,
+2026 Jun 23 05:52:10 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 31104 (level 6) -> 'Common web attack.'
+Src IP: 198.51.100.45
+198.51.100.45 - - [16/Jun/2026:02:41:20 +0700] "GET /download.php?file=../../../../etc/passwd HTTP/1.1" 403 0
+
+** Alert 1782193932.1880: - web,accesslog,attack,pci_dss_6.5,pci_dss_11.4,pci_dss_6.5.1,gdpr_IV_35.7.d,nist_800_53_SA.11,nist_800_53_SI.4,tsc_CC6.6,tsc_CC7.1,tsc_CC8.1,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,
+2026 Jun 23 05:52:12 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 31104 (level 6) -> 'Common web attack.'
+Src IP: 198.51.100.45
+198.51.100.45 - - [16/Jun/2026:02:41:22 +0700] "GET /view?page=..\..\..\..\windows\win.ini HTTP/1.1" 404 210
+
+** Alert 1782193934.2350: - web,accesslog,attack,pci_dss_6.5,pci_dss_11.4,gdpr_IV_35.7.d,nist_800_53_SA.11,nist_800_53_SI.4,tsc_CC6.6,tsc_CC7.1,tsc_CC8.1,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,
+2026 Jun 23 05:52:14 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 31101 (level 5) -> 'Web server 400 error code.'
+Src IP: 203.0.113.88
+203.0.113.88 - - [16/Jun/2026:02:41:30 +0700] "GET /admin/ HTTP/1.1" 404 154
+
+** Alert 1782193936.2781: - web,accesslog,attack,pci_dss_6.5,pci_dss_11.4,gdpr_IV_35.7.d,nist_800_53_SA.11,nist_800_53_SI.4,tsc_CC6.6,tsc_CC7.1,tsc_CC8.1,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,
+2026 Jun 23 05:52:16 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 31101 (level 5) -> 'Web server 400 error code.'
+Src IP: 203.0.113.88
+203.0.113.88 - - [16/Jun/2026:02:41:30 +0700] "GET /backup/ HTTP/1.1" 404 154
+
+** Alert 1782193938.3213: - web,accesslog,attack,pci_dss_6.5,pci_dss_11.4,gdpr_IV_35.7.d,nist_800_53_SA.11,nist_800_53_SI.4,tsc_CC6.6,tsc_CC7.1,tsc_CC8.1,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,
+2026 Jun 23 05:52:18 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 31101 (level 5) -> 'Web server 400 error code.'
+Src IP: 203.0.113.88
+203.0.113.88 - - [16/Jun/2026:02:41:30 +0700] "GET /wp-admin/ HTTP/1.1" 404 154
+
+** Alert 1782193940.3647: - web,appsec,attack,pci_dss_6.5,pci_dss_11.4,gdpr_IV_35.7.d,nist_800_53_SA.11,nist_800_53_SI.4,tsc_CC6.6,tsc_CC7.1,tsc_CC8.1,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,
+2026 Jun 23 05:52:20 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 31516 (level 6) -> 'Suspicious URL access.'
+Src IP: 203.0.113.88
+203.0.113.88 - - [16/Jun/2026:02:41:30 +0700] "GET /config.php.bak HTTP/1.1" 404 154
+
+** Alert 1782193944.4079: - web,accesslog,attack,pci_dss_6.5,pci_dss_11.4,gdpr_IV_35.7.d,nist_800_53_SA.11,nist_800_53_SI.4,tsc_CC6.6,tsc_CC7.1,tsc_CC8.1,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,
+2026 Jun 23 05:52:24 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 31101 (level 5) -> 'Web server 400 error code.'
+Src IP: 203.0.113.150
+203.0.113.150 - - [16/Jun/2026:03:05:21 +0700] "POST /comment.php?user=anon&msg=<iframe+src='javascript:alert(document.cookie)'> HTTP/1.1" 400 250
+
+** Alert 1782193946.4581: - local,web,brute_forceweb,authentication_failed,pci_dss_10.2.4
+2026 Jun 23 05:52:26 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 100020 (level 5) -> 'Failed login attempt on API authentication endpoint (HTTP 401).'
+Src IP: 198.51.100.22
+198.51.100.22 - - [16/Jun/2026:03:10:01 +0700] "POST /api/v1/auth/login HTTP/1.1" 401 8
+
+** Alert 1782193948.4957: - local,web,brute_forceweb,authentication_failed,pci_dss_10.2.4
+2026 Jun 23 05:52:28 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 100020 (level 5) -> 'Failed login attempt on API authentication endpoint (HTTP 401).'
+Src IP: 198.51.100.22
+198.51.100.22 - - [16/Jun/2026:03:10:01 +0700] "POST /api/v1/auth/login HTTP/1.1" 401 85
+
+** Alert 1782193966.5334: - syslog,cisco,cisco-asa,
+2026 Jun 23 05:52:46 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 64004 (level 3) -> 'ASA warning message.'
+Jun 16 02:42:30 cisco-fw %ASA-4-106103: access-list inbound denied tcp for user 'none' 45.33.22.11(43210) -> 172.16.10.5(21)
+
+** Alert 1782193968.5643: - syslog,cisco,cisco-asa,
+2026 Jun 23 05:52:48 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 64004 (level 3) -> 'ASA warning message.'
+Jun 16 02:42:30 cisco-fw %ASA-4-106103: access-list inbound denied tcp for user 'none' 45.33.22.11(43211) -> 172.16.10.5(22)
+
+** Alert 1782193970.5952: - syslog,cisco,cisco-asa,
+2026 Jun 23 05:52:50 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 64004 (level 3) -> 'ASA warning message.'
+Jun 16 02:42:30 cisco-fw %ASA-4-106103: access-list inbound denied tcp for user 'none' 45.33.22.11(43212) -> 172.16.10.5(23)
+
+** Alert 1782193972.6261: - syslog,cisco,cisco-asa,
+2026 Jun 23 05:52:52 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 64004 (level 3) -> 'ASA warning message.'
+Jun 16 02:42:30 cisco-fw %ASA-4-106103: access-list inbound denied tcp for user 'none' 45.33.22.11(43213) -> 172.16.10.5(80)
+
+** Alert 1782193974.6570: - syslog,cisco,cisco-asa,
+2026 Jun 23 05:52:54 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 64004 (level 3) -> 'ASA warning message.'
+Jun 16 02:42:55 cisco-fw %ASA-4-400000: IPS:1000 IP options-Bad Option List 6.177.242.76 -> 88.6.197.89
+
+** Alert 1782193976.6858: - syslog,cisco,cisco-asa,ids,pci_dss_11.4,gpg13_4.12,gdpr_IV_35.7.d,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,
+2026 Jun 23 05:52:56 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 64017 (level 8) -> 'ASA: Attack in progress detected'
+Src IP: MULTIPLE_IPS
+Jun 16 02:42:55 cisco-fw %ASA-4-400014: IPS:2004 ICMP Echo Request flood drop rate exceeded from MULTIPLE_IPS to 172.16.10.100
+
+** Alert 1782193978.7285: - syslog,cisco,cisco-asa,
+2026 Jun 23 05:52:58 (wazuh-agent-6954b6f93192) any->/var/log/app/live_stream.log
+Rule: 64004 (level 3) -> 'ASA warning message.'
+Jun 16 03:01:10 cisco-fw %ASA-4-106103: access-list outbound denied tcp inside:172.16.10.50(51234) -> outside:185.220.101.99(4444) -
+

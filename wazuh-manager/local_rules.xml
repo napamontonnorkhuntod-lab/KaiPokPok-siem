@@ -1,0 +1,226 @@
+<group name="local,web,attack">
+
+  <!-- ============================================================ -->
+  <!-- RULE GROUP 1: SQL INJECTION DETECTION (HTTP 200 OK)         -->
+  <!-- Catches attacks that Wazuh misses because they return 200   -->
+  <!-- ============================================================ -->
+
+  <!-- Base rule: any access log line with 200 response -->
+  <rule id="100001" level="0">
+    <if_sid>31100</if_sid>
+    <id>^200$</id>
+    <description>Web request returned HTTP 200 OK.</description>
+    <group>web,accesslog</group>
+  </rule>
+
+  <!-- SQL Injection: UNION SELECT keyword in URL with 200 response -->
+  <rule id="100002" level="12">
+    <if_sid>100001</if_sid>
+    <url type="pcre2">(?i)union[\s\+%20]+select</url>
+    <description>SQL Injection Attack Detected: UNION SELECT payload in URL returned HTTP 200 (successful exploitation).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5,pci_dss_11.4</group>
+  </rule>
+
+  <!-- SQL Injection: OR '1'='1' bypass pattern -->
+  <rule id="100003" level="12">
+    <if_sid>100001</if_sid>
+    <url type="pcre2">(?i)(or|and)[\s\+%20]+['"]\d+['"]=+['"]\d+['"]</url>
+    <description>SQL Injection Attack Detected: Boolean-based SQL bypass (OR 1=1) in URL returned HTTP 200 (successful exploitation).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5,pci_dss_11.4</group>
+  </rule>
+
+  <!-- ============================================================ -->
+  <!-- RULE GROUP 2: DATA EXFILTRATION DETECTION (HTTP 200 OK)     -->
+  <!-- ============================================================ -->
+
+  <!-- Data Exfiltration: Sensitive filename keywords in URL -->
+  <rule id="100010" level="10">
+    <if_sid>100001</if_sid>
+    <url type="pcre2">(?i)\.(sql|bak|backup|dump|db|mdb|sqlite)(\?|$|&amp;)</url>
+    <description>Potential Data Exfiltration: Sensitive database file downloaded via HTTP 200 OK. Filename contains database extension.</description>
+    <mitre>
+      <id>T1041</id>
+    </mitre>
+    <group>web,attack,data_exfiltration,pci_dss_6.5</group>
+  </rule>
+
+  <!-- Data Exfiltration: Massive response body (>= 100MB = 104857600 bytes) -->
+  <!-- Wazuh web-accesslog decoder extracts the "id" field as size field   -->
+  <!-- We use extra_data which captures the full raw log for regex matching -->
+  <rule id="100011" level="13">
+    <if_sid>100001</if_sid>
+    <match type="pcre2">HTTP/\d\.\d" 200 [1-9]\d{8,}</match>
+    <description>Critical: Massive Data Exfiltration Detected - HTTP 200 response with payload larger than 100MB. Possible database dump exfiltration.</description>
+    <mitre>
+      <id>T1041</id>
+    </mitre>
+    <group>web,attack,data_exfiltration,critical</group>
+  </rule>
+
+  <!-- Combined: Sensitive file + massive size (highest severity) -->
+  <rule id="100012" level="15">
+    <if_sid>100010</if_sid>
+    <match type="pcre2">HTTP/\d\.\d" 200 [1-9]\d{8,}</match>
+    <description>CRITICAL: Confirmed Data Exfiltration - Sensitive database file downloaded with massive payload (>100MB) via HTTP 200 OK.</description>
+    <mitre>
+      <id>T1041</id>
+    </mitre>
+    <group>web,attack,data_exfiltration,critical,pci_dss_6.5,pci_dss_11.4</group>
+  </rule>
+
+</group>
+
+
+<group name="local,web,brute_force">
+
+  <!-- ============================================================ -->
+  <!-- RULE GROUP 3: BRUTE FORCE + SUCCESSFUL LOGIN CORRELATION     -->
+  <!-- Detects: Multiple 401 -> followed by 200 on login endpoint  -->
+  <!-- ============================================================ -->
+
+  <!-- Step 1: Count 401 failures on login endpoint -->
+  <rule id="100020" level="5">
+    <if_sid>31101</if_sid>
+    <url>/api/v1/auth/login</url>
+    <id>^401$</id>
+    <description>Failed login attempt on API authentication endpoint (HTTP 401).</description>
+    <group>web,authentication_failed,pci_dss_10.2.4</group>
+  </rule>
+
+  <!-- Step 2: Alert when >= 3 failures in 120 seconds from same IP -->
+  <rule id="100021" level="8" frequency="3" timeframe="120">
+    <if_matched_sid>100020</if_matched_sid>
+    <same_source_ip />
+    <description>Brute Force Attack Detected: 3+ failed login attempts on /api/v1/auth/login from same source IP within 2 minutes.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>web,attack,brute_force,authentication_failures,pci_dss_10.2.4,pci_dss_11.4</group>
+  </rule>
+
+  <!-- Step 3: Successful login (200) on the login endpoint -->
+  <rule id="100022" level="5">
+    <if_sid>100001</if_sid>
+    <url>/api/v1/auth/login</url>
+    <description>Successful login on API authentication endpoint (HTTP 200 OK).</description>
+    <group>web,authentication_success</group>
+  </rule>
+
+  <!-- Step 4: CORRELATION - 200 on login endpoint after brute force warning = Account Compromise -->
+  <!-- if_matched_sid monitors same IP that was already flagged by rule 100021 -->
+  <rule id="100023" level="15" frequency="2" timeframe="300">
+    <if_matched_sid>100020</if_matched_sid>
+    <same_source_ip />
+    <url>/api/v1/auth/login</url>
+    <id>^200$</id>
+    <description>CRITICAL: Account Compromise via Brute Force - Successful login (HTTP 200) detected on /api/v1/auth/login from same IP that previously failed authentication multiple times. Authentication bypass confirmed.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>web,attack,account_compromise,brute_force,critical,pci_dss_10.2.4,pci_dss_10.2.5</group>
+  </rule>
+
+</group>
+
+
+<group name="local,windows,sysmon">
+
+  <!-- ============================================================ -->
+  <!-- RULE GROUP 4: WINDOWS EVENT LOG DETECTION (JSON format)     -->
+  <!-- Handles EventIDs from live_stream.log (JSON log_format)     -->
+  <!-- ============================================================ -->
+
+  <!-- EventID 4625: Failed logon -->
+  <rule id="100030" level="5">
+    <if_group>json</if_group>
+    <field name="EventID">^4625$</field>
+    <description>Windows Security: Account failed to log on (EventID 4625). Target: $(targetUserName) from IP: $(ipAddress).</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>windows,authentication_failed,pci_dss_10.2.4</group>
+  </rule>
+
+  <!-- EventID 4720: New user account created -->
+  <rule id="100031" level="10">
+    <if_group>json</if_group>
+    <field name="EventID">^4720$</field>
+    <description>Windows Security: A new user account was created (EventID 4720). New Account: $(targetUserName). Created by: $(subjectUserName). Possible backdoor/persistence.</description>
+    <mitre>
+      <id>T1136</id>
+    </mitre>
+    <group>windows,account_created,persistence,pci_dss_10.2.5</group>
+  </rule>
+
+  <!-- EventID 4732: User added to privileged group -->
+  <rule id="100032" level="12">
+    <if_group>json</if_group>
+    <field name="EventID">^4732$</field>
+    <description>Windows Security: A member was added to a security-enabled local group (EventID 4732). Account: $(targetUserName) added to Administrators. Possible privilege escalation.</description>
+    <mitre>
+      <id>T1078</id>
+    </mitre>
+    <group>windows,privilege_escalation,pci_dss_10.2.5</group>
+  </rule>
+
+  <!-- EventID 1102: Security audit log cleared -->
+  <rule id="100033" level="14">
+    <if_group>json</if_group>
+    <field name="EventID">^1102$</field>
+    <description>CRITICAL: Windows Security Audit Log Cleared (EventID 1102) by $(subjectUserName)@$(subjectDomainName). This is a common anti-forensics technique used after an intrusion.</description>
+    <mitre>
+      <id>T1070.001</id>
+    </mitre>
+    <group>windows,log_cleared,anti_forensics,critical,pci_dss_10.2.7</group>
+  </rule>
+
+  <!-- EventID 4104: PowerShell Script Block Logging -->
+  <rule id="100034" level="8">
+    <if_group>json</if_group>
+    <field name="EventID">^4104$</field>
+    <description>Windows PowerShell: Script block executed by $(user). Review scriptBlockText for malicious content.</description>
+    <mitre>
+      <id>T1059.001</id>
+    </mitre>
+    <group>windows,powershell,pci_dss_10.6.1</group>
+  </rule>
+
+  <!-- EventID 4104: PowerShell with known malicious keywords -->
+  <!-- Using <match> because Wazuh rejects camelCase field names in <field> tag -->
+  <!-- <match> searches in the raw full_log string which contains the entire JSON line -->
+  <rule id="100035" level="15">
+    <if_sid>100034</if_sid>
+    <match>(?i)(vssadmin|delete shadows|ExecutionPolicy Bypass|Stop-Service|WinDefend|\.locked|Rename-Item)</match>
+    <description>CRITICAL: Ransomware/Malware Activity Detected via PowerShell (EventID 4104). Script contains ransomware indicators: shadow copy deletion, antivirus tampering, or file encryption commands.</description>
+    <mitre>
+      <id>T1490</id>
+    </mitre>
+    <group>windows,ransomware,malware,critical,pci_dss_10.6.1</group>
+  </rule>
+
+  <!-- EventID 4624: Successful logon -->
+  <rule id="100036" level="3">
+    <if_group>json</if_group>
+    <field name="EventID">^4624$</field>
+    <description>Windows Security: Successful logon (EventID 4624). User: $(targetUserName)@$(targetDomainName) from IP: $(ipAddress). Logon Type: $(logonType).</description>
+    <group>windows,authentication_success</group>
+  </rule>
+
+  <!-- Correlation: New user created + added to Admins (high-confidence attack chain) -->
+  <!-- Fires when EventID 4732 appears within 5 minutes after 4720 was seen -->
+  <rule id="100037" level="15" frequency="2" timeframe="300">
+    <if_matched_sid>100031</if_matched_sid>
+    <description>CRITICAL: Backdoor Account Creation Chain Detected - New account created (EventID 4720) followed by another suspicious Windows security event. High-confidence intrusion indicator.</description>
+    <mitre>
+      <id>T1136</id>
+    </mitre>
+    <group>windows,account_compromise,persistence,critical</group>
+  </rule>
+
+</group>

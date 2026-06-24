@@ -1,0 +1,14 @@
+filebeat.inputs:
+- type: filestream
+  id: wazuh-alerts
+  paths:
+    - /var/log/siem_logs/alerts.json
+    - /var/log/siem_logs/alerts.log
+
+output.kafka:
+  hosts: ["kafka:29092"]
+  topic: 'wazuh-alerts'
+  partition.round_robin:
+    reachable_only: false
+  required_acks: 1
+  max_message_bytes: 1000000

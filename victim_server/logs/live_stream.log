@@ -1,0 +1,32 @@
+192.168.1.50 - - [17/Jun/2026:10:00:01 +0700] "GET /index.html HTTP/1.1" 200 4523
+192.168.1.50 - - [17/Jun/2026:10:00:02 +0700] "GET /assets/css/style.css HTTP/1.1" 200 1250
+192.168.1.52 - - [17/Jun/2026:10:05:15 +0700] "GET /about-us.html HTTP/1.1" 200 3120
+198.51.100.45 - - [17/Jun/2026:04:20:00 +0700] "GET /download.php?file=secret_backup_db.sql HTTP/1.1" 200 985420100
+198.51.100.99 - - [17/Jun/2026:03:15:22 +0700] "POST /api/v1/user/profile HTTP/1.1" 200 1040 "user_agent: python-requests/2.31.0" "user: somchai_staff"
+114.23.45.12 - - [16/Jun/2026:02:41:15 +0700] "GET /index.php?id=1'%20UNION%20SELECT%20username,%20password%20FROM%20users-- HTTP/1.1" 200 5420
+114.23.45.12 - - [16/Jun/2026:02:41:16 +0700] "GET /login.php?user=admin'%20OR%20'1'='1' HTTP/1.1" 200 4125
+198.51.100.45 - - [16/Jun/2026:02:41:20 +0700] "GET /download.php?file=../../../../etc/passwd HTTP/1.1" 403 0
+198.51.100.45 - - [16/Jun/2026:02:41:22 +0700] "GET /view?page=..\..\..\..\windows\win.ini HTTP/1.1" 404 210
+203.0.113.88 - - [16/Jun/2026:02:41:30 +0700] "GET /admin/ HTTP/1.1" 404 154
+203.0.113.88 - - [16/Jun/2026:02:41:30 +0700] "GET /backup/ HTTP/1.1" 404 154
+203.0.113.88 - - [16/Jun/2026:02:41:30 +0700] "GET /wp-admin/ HTTP/1.1" 404 154
+203.0.113.88 - - [16/Jun/2026:02:41:30 +0700] "GET /config.php.bak HTTP/1.1" 404 154
+203.0.113.150 - - [16/Jun/2026:03:05:20 +0700] "GET /search.php?q=<script>alert(1)</script> HTTP/1.1" 200 3410
+203.0.113.150 - - [16/Jun/2026:03:05:21 +0700] "POST /comment.php?user=anon&msg=<iframe+src='javascript:alert(document.cookie)'> HTTP/1.1" 400 250
+198.51.100.22 - - [16/Jun/2026:03:10:01 +0700] "POST /api/v1/auth/login HTTP/1.1" 401 8
+198.51.100.22 - - [16/Jun/2026:03:10:01 +0700] "POST /api/v1/auth/login HTTP/1.1" 401 85
+198.51.100.22 - - [16/Jun/2026:03:10:05 +0700] "POST /api/v1/auth/login HTTP/1.1" 200 1420
+{"EventID":4104,"ProviderName":"Microsoft-Windows-PowerShell","Channel":"PowerShell","scriptBlockText":"vssadmin.exe delete shadows /all /quiet ; Get-ChildItem  C:\\SharedDocs\\ -Recycle | ForEach-Object { Rename-Item $_.FullName ($_.Name + '.locked') }","user":"SYSTEM"}
+{"EventID":4625,"ProviderName":"Microsoft-Windows-Security-Auditing","Channel":"Security","Message":"An account failed to log on.","targetUserName":"administrator","ipAddress":"198.51.100.77","status":"0xC000006A"}
+{"EventID":4720,"ProviderName":"Microsoft-Windows-Security-Auditing","Channel":"Security","Message":"A user account was created.","targetUserName":"hacker_admin","subjectUserName":"SYSTEM"}
+{"EventID":4732,"ProviderName":"Microsoft-Windows-Security-Auditing","Channel":"Security","Message":"A member was added to a security-enabled local group.","targetUserName":"hacker_admin","targetSid":"S-1-5-32-544","subjectUserName":"SYSTEM"}
+{"EventID":1102,"ProviderName":"Microsoft-Windows-Eventlog","Channel":"Security","Message":"The audit log was cleared.","subjectUserName":"administrator","subjectDomainName":"ATTACKRANGE"}
+{"EventID":4104,"ProviderName":"Microsoft-Windows-PowerShell","Channel":"PowerShell","scriptBlockText":"powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command \"Get-ChildItem C:\\Users\\*\\Documents -Recycle | ForEach-Object { $_.Delete() } ; Stop-Service -Name WinDefend\"","user":"SYSTEM"}
+{"EventID":4624,"ProviderName":"Microsoft-Windows-Security-Auditing","Channel":"Security","Message":"An account was successfully logged on.","targetUserName":"somchai_staff","targetDomainName":"ATTACKRANGE","logonType":"3","ipAddress":"192.168.1.115"}
+Jun 16 02:42:30 cisco-fw %ASA-4-106103: access-list inbound denied tcp for user 'none' 45.33.22.11(43210) -> 172.16.10.5(21)
+Jun 16 02:42:30 cisco-fw %ASA-4-106103: access-list inbound denied tcp for user 'none' 45.33.22.11(43211) -> 172.16.10.5(22)
+Jun 16 02:42:30 cisco-fw %ASA-4-106103: access-list inbound denied tcp for user 'none' 45.33.22.11(43212) -> 172.16.10.5(23)
+Jun 16 02:42:30 cisco-fw %ASA-4-106103: access-list inbound denied tcp for user 'none' 45.33.22.11(43213) -> 172.16.10.5(80)
+Jun 16 02:42:55 cisco-fw %ASA-4-400000: IPS:1000 IP options-Bad Option List 6.177.242.76 -> 88.6.197.89
+Jun 16 02:42:55 cisco-fw %ASA-4-400014: IPS:2004 ICMP Echo Request flood drop rate exceeded from MULTIPLE_IPS to 172.16.10.100
+Jun 16 03:01:10 cisco-fw %ASA-4-106103: access-list outbound denied tcp inside:172.16.10.50(51234) -> outside:185.220.101.99(4444) -
